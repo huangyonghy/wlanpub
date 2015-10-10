@@ -34,6 +34,7 @@ wlanpub为云平台公共模块，提供一些公共属性方法，包括mqhd和
 mqhd实现对RabbitMQ的基本封装，如RabbitMQ的单播连接、收发操作等；basic实现部分常见系统调用封装，mimeType、serviceName等常量定义。后续描述RabbitMQ简称MQ。
 
 ## Usage
+
 ### Install
     npm install -g wlanpub
 ### Steps
@@ -89,19 +90,19 @@ mqhd实现对RabbitMQ的基本封装，如RabbitMQ的单播连接、收发操作
 
 ### mqhd.setSendOption(key, value)
 用于设置webserver端发送消息到MQ的publish选项。    
-目前只用到**replyTo、correlationId**两个选项，其它选项参考postwait/node-amqp开源库中
+目前用到**replyTo、messageId、appId**选项，其它选项参考postwait/node-amqp开源库中
 [exchange.publish(routingKey, message, options, callback)](https://www.npmjs.com/package/amqp#exchangepublishroutingkey-message-options-callback)的介绍，后面提到的也一样。   
 `key`为选项名, `value`为选项`key`对应的值。
 
 ### mqhd.getSendOption([key])
 用于获取webserver端发送消息到MQ的publish选项值。    
 `key`为选项名, 返回选项`key`对应的值。    
-若不带参数，则将所有选项值对返回，形如{ 'replyTo' : '', 'correlationId'  : '' }。
+若不带参数，则将所有选项值对返回，形如{ 'replyTo' : '', 'messageId'  : '', 'appId' : '' }。
 
 ### mqhd.sendMsg(pkey, msg[, pubOption])
 用于webserver端发送消息到MQ。    
 `pkey`为云平台业务名。    
-`msg`为http request解析出的头体内容, 消息格式**约定为{ 'head':'', 'url':'', 'method':'', 'body':'' }**，
+`msg`为http request解析出的头体内容, 消息格式**约定为{ 'head':'', 'url':'', 'method':'', 'body':'' }**，需要为字符串形式。    
 各域值与http request对象的关系：
 
     {
@@ -110,12 +111,12 @@ mqhd实现对RabbitMQ的基本封装，如RabbitMQ的单播连接、收发操作
        'method' : request.method,
        'body'   : +chunk(请求消息体)
     }
-`pubOption`可选参数，为发送时的publish选项，目前只用到`{ 'replyTo' : '', 'correlationId'  : '1' }`。默认采用`mqhd`中
+`pubOption`可选参数，为发送时的publish选项，目前用到`{ 'replyTo' : '', 'messageId'  : '1', 'appId' : '' }`。默认采用`mqhd`中
   被动态设置的值,即`mqhd.getSendOption()`。
 
 ### mqhd.replyMsg(msg, deliveryInfo)
 用于云平台业务端回应消息到MQ。    
-`msg`为业务端需要回应的消息内容, 消息格式自定义。    
+`msg`为业务端需要回应的消息内容, 消息格式自定义。**需为字符串形式**。    
 `deliverInfo`来源不用业务端感知，为订阅消息回调函数的第三个入参直接透传给`replyMsg`即可。    
  具体详情参考接下来对`mqhd.connectReadyForService`方法的介绍。
 
@@ -143,7 +144,7 @@ mqhd实现对RabbitMQ的基本封装，如RabbitMQ的单播连接、收发操作
     function(message, header, deliveryInfo) {
         if (message.data) {
             var msgText = message.data.toString();
-            var resObj  = resMap.get(deliveryInfo.correlationId);
+            var resObj  = resMap.get(deliveryInfo.messageId);
             resObj.write(msgText);
             resObj.end();
         }
