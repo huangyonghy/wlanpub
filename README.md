@@ -39,7 +39,7 @@ mqhd实现对RabbitMQ的基本封装，如RabbitMQ的单播连接、收发操作
     npm install -g wlanpub
 ### Steps
 以业务端使用该库来举例。    
-1.加载wlanpub库：
+1.加载wlanpub库：    
 
     var mqhd  = require('wlanpub').mqhd,
         basic = require('wlanpub').basic;
@@ -51,7 +51,7 @@ mqhd实现对RabbitMQ的基本封装，如RabbitMQ的单播连接、收发操作
   若需要新增或修改任何约定属性内容，请通知负责人更新公共模块。    
   MQServer用户名检查及增加流程参考后面[MQServer](https://www.npmjs.com/package/wlanpub#mqserver)节。
 
-3.设置MQServer的服务器名列表：
+3.设置MQServer的服务器名列表：    
 
     var MQHostnames = ["h3crd-wlan1", "h3crd-wlan2"];
     mqhd.setHostnames(MQHostnames);
@@ -92,30 +92,29 @@ mqhd实现对RabbitMQ的基本封装，如RabbitMQ的单播连接、收发操作
 用于设置webserver端发送消息到MQ的publish选项。    
 目前用到**replyTo、messageId、appId**选项，其它选项参考postwait/node-amqp开源库中
 [exchange.publish(routingKey, message, options, callback)](https://www.npmjs.com/package/amqp#exchangepublishroutingkey-message-options-callback)的介绍，后面提到的也一样。   
-`key`为选项名, `value`为选项`key`对应的值。
+`key`为选项名, `value`为选项`key`对应的值。其中`replyTo`为回应消息队列名，`messageId`为http请求标识符，`appId`为消息来源处即"webserver"或业务名。
 
 ### mqhd.getSendOption([key])
 用于获取webserver端发送消息到MQ的publish选项值。    
 `key`为选项名, 返回选项`key`对应的值。    
 若不带参数，则将所有选项值对返回，形如{ 'replyTo' : '', 'messageId'  : '', 'appId' : '' }。
 
-### mqhd.sendMsg(pkey, msg[, pubOption])
-用于webserver端发送消息到MQ。    
+### mqhd.sendMsg(pkey, msg[, response])
+用于webserver端发送消息到MQ,也可用于业务通过MQ主动发消息到webserver（设备场景）。    
 `pkey`为云平台业务名。    
-`msg`为http request解析出的头体内容, 消息格式**约定为{ 'head':'', 'url':'', 'method':'', 'body':'' }**，需要为字符串形式。    
-各域值与http request对象的关系：
+`msg`为http request解析出的头体内容, 消息格式建议采用**{ 'headers':'', 'url':'', 'method':'', 'body':'' }**，需要为字符串形式。
+各域值与http request对象的关系：    
 
     {
-       'head'   : request.headers,
+       'headers': request.headers,
        'url'    : url.parse(request.url),
        'method' : request.method,
        'body'   : +chunk(请求消息体)
     }
-`pubOption`可选参数，为发送时的publish选项，目前用到`{ 'replyTo' : '', 'messageId'  : '1', 'appId' : '' }`。默认采用`mqhd`中
-  被动态设置的值,即`mqhd.getSendOption()`。
+`response`可选参数，为当前请求对应的response对象。若为webserver发往业务的http消息必须提供该参数，其它场景不需要。 
 
 ### mqhd.replyMsg(msg, deliveryInfo)
-用于云平台业务端回应消息到MQ。    
+用于云平台业务端回应消息到MQ,也可以用于webserver通过MQ回应消息到业务（设备场景）。    
 `msg`为业务端需要回应的消息内容, 消息格式自定义。**需为字符串形式**。    
 `deliverInfo`来源不用业务端感知，为订阅消息回调函数的第三个入参直接透传给`replyMsg`即可。    
  具体详情参考接下来对`mqhd.connectReadyForService`方法的介绍。
@@ -179,7 +178,7 @@ mqhd实现对RabbitMQ的基本封装，如RabbitMQ的单播连接、收发操作
 用于获取指定网卡类型的ipv4或ipv6地址，若指定类型有多个接口默认取第一个的地址。    
   `iftype`为网卡类型，如eth, lo, tunl。    
   `family`为地址协议类型，IPv4 or IPv6。    
-  常用方式：`basic.getLocalIP(eth, IPv4)`。
+  常用方式：`basic.getLocalIP('eth', 'IPv4')`。
 
 ### basic.mkdirsSync(dirpath, mode)
 用于同步创建多级目录，其异步版见`basic.mkdirs(dirpath, mode)`。    
@@ -197,7 +196,7 @@ mqhd实现对RabbitMQ的基本封装，如RabbitMQ的单播连接、收发操作
   常用方式：`tmp = trim(stdout).split(' ')`, 然后`tmp`是个数组对象。
 
 ## MQServer
-连上MQServer服务器上，按以下步骤操作。     
+连上MQServer服务器上，按以下步骤操作。    
 1.检查将要使用的用户名是否存在
 
     sudo rabbitmqctl list_users

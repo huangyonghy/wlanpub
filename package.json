@@ -1,6 +1,6 @@
 {
   "name": "wlanpub",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "description": "H3C-WLAN云平台公共模块 ",
   "main": "wlanpub.js",
   "scripts": {
@@ -14,9 +14,10 @@
     "url": "git://github.com/JunejaTung/wlanpub.git"
   },
   "homepage": "https://github.com/JunejaTung/wlanpub",
-  "_id": "wlanpub@0.0.9",
+  "_id": "wlanpub@0.0.10",
   "dependencies": {
-    "amqp": "~0.2.4"
+    "amqp": "~0.2.4",
+    "uuid": "~2.0.1"
   },
   "author": "Juneja",
   "license": "ISC"
