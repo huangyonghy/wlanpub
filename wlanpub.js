@@ -6,11 +6,11 @@
 "use strict";
 
 var basic  = require('./lib/basic'),
-    mqoper = require('./lib/mqoper');
-
+    mqoper = require('./lib/mqoper'),
+    dboper = require('./lib/dboper');
 
 module.exports = {
+    "basic" : basic,
     "mqhd"  : mqoper,
-    "basic" : basic
+    "dbhd"  : dboper
 }
-
