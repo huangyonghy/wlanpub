@@ -25,6 +25,7 @@
   - [dbhd.connectDatabase([redisPara, mongoosePara])](#dbhd-connectdatabase-redispara-mongoosepara)
   - [dbhd.redisClient](#dbhd-redisclient)
   - [dbhd.mongo](#dbhd-mongo)
+  - [dbhd.Schema](#dbhd-schema)
 - [Basic](#basic)
   - [basic.mimeType](#basic-mimetype)
   - [basic.serviceName](#basic-servicename)
@@ -197,6 +198,9 @@ dbhd实现对数据库的访问，即提供连接数据库的操作。
 
 ### dbhd.mongo
 该属性为连接*mongoose*数据库的句柄对象。
+
+### dbhd.Schema
+该属性等同于`require('mongoose').Schema`，为`mongoose`的Schema句柄。**若要使用Schema请务必使用该模块暴露出的Schema属性，不要自行`require`出**。
 
 ## Basic
 包括一些系统接口封装，如获取本机地址、创建多级目录、空格转换等；    
