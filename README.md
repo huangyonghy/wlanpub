@@ -260,7 +260,7 @@ monitor实现对业务访问统计、进程基本信息等数据的提取和存�
 ### monitor.redisClient
 `redisClient`属性为redis服务的连接对象。    
 
-### monmitor.createProcessStats(moduleName, redisPara)
+### monitor.createProcessStats(moduleName, redisPara)
 为模块`moduleName`创建监控收集进程基本信息的客服端，会采用`redisPara`创建用于存储数据的redis连接。   
   `moduleName`为云端模块名，为`webserver`或已评审的业务微服务名。    
   `redisPara`为redis连接参数，可选。若不设置，则默认使用微软云的redis服务。   
