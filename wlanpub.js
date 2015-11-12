@@ -5,14 +5,18 @@
  */
 "use strict";
 
-var basic  = require('./lib/basic'),
-    mqoper = require('./lib/mqoper'),
-    dboper = require('./lib/dboper'),
-    casauth = require('./lib/cas-authentication');
+var basic   = require('./lib/basic'),
+    mqoper  = require('./lib/mqoper'),
+    dboper  = require('./lib/dboper'),
+    monitor = require('./lib/monitor'),
+    casauth = require('./lib/cas-authentication'),
+    connectionModel = require('./models/connectionModel');
 
 module.exports = {
     "basic"   : basic,
     "mqhd"    : mqoper,
     "dbhd"    : dboper,
-    "casauth" : casauth
-}
+    "monitor" : monitor,
+    "casauth" : casauth,
+    "connectionModel" : connectionModel
+};

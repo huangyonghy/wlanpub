@@ -34,13 +34,19 @@
   - [basic.mkdirsSync(dirpath, mode)](#basic-mkdirssync-dirpath-mode)
   - [basic.mkdirs(dirpath, mode, callback)](#basic-mkdirs-dirpath-mode-callback)
   - [basic.trimSpaces(str)](#basic-trimspaces-str)
+- [Monitor](#monitor)
+  - [monitor.client](#monitor-client)
+  - [monitor.redisClient](#monitor-redisclient)
+  - [monitor.createProcessStats(moduleName, redisPara)](#monitor-createprocessstats-modulename-redispara)
+  - [monitor.accessStats(request, response, next)](#monitor-accessstats-request-response-next)
 - [MQServer](#mqserver)
 
 ## Synopsis
-wlanpub为云平台公共模块，提供一些公共属性方法，包括mqhd、basic、dbhd三个独立的子模块。    
+wlanpub为云平台公共模块，提供一些公共属性方法，包括mqhd、basic、dbhd、monitor等独立的子模块。    
 basic实现部分常见系统调用封装，mimeType、serviceName等常量定义；    
 mqhd实现对RabbitMQ的基本封装，如RabbitMQ（简称MQ）的单播连接、收发操作等；    
-dbhd实现对数据库的访问，即提供连接数据库的操作。
+dbhd实现对数据库的访问，即提供连接数据库的操作；    
+monitor实现对业务访问统计、进程基本信息等数据的提取和存储到redis。
 
 ## Usage
 
@@ -58,9 +64,10 @@ dbhd实现对数据库的访问，即提供连接数据库的操作。
 
     var basic = require('wlanpub').basic,
         mqhd  = require('wlanpub').mqhd,
-        dbhd  = require('wlanpub').dbhd;
+        dbhd  = require('wlanpub').dbhd,
+        monit = require('wlanpub').monitor;
 如果只使用其中的某个子模块，单独加载该子模块即可，不用全部加载。    
-一些系统调用、参数常量等使用basic子模块；MQ相关属性方法可以使用mqhd子模块；数据库相关的请使用dbhd子模块。
+一些系统调用、参数常量等使用basic子模块；MQ相关属性方法可以使用mqhd子模块；数据库相关的请使用dbhd子模块；业务监控相关的请使用monitor子模块。
 
 2.如果使用mqhd子模块：    
   1)首先在模块入口处设置MQServer的服务器名列表，如果不设置，默认使用微软云上的环境:    
@@ -96,6 +103,10 @@ dbhd实现对数据库的访问，即提供连接数据库的操作。
         dbhd.connectRedis({'port':6379, 'host':'192.168.110.34'});    
     如果只使用mongoose数据库，请调用以下接口：    
         dbhd.connectMongoose('mongodb://admin:admin@192.168.110.33:40000/lyytest');    
+
+4.进行业务进程基本信息监控，需在能方便设置Redis连接参数的文件中使用如下接口，若不设置`redisPara`参数，则默认使用微软云上的环境：   
+    
+    monit.createProcessStats(basic.serviceName.spiritapp, redisPara);
 
 ## Mqhd
 基于[postwait/node-amqp](https://www.npmjs.com/package/amqp)开源库，将创建连接、exchange和queue的创建等细节进行封装私有化，只暴露一些必要的属性和方法，比如连接、收发exchange等对象，MQ连接服务和收发消息等方法。
@@ -238,6 +249,27 @@ dbhd实现对数据库的访问，即提供连接数据库的操作。
 ### basic.trimSpaces(str)
 用于将字符串中`str`多个空格转换成一个空格，主要用于格式化行输出获取指定栏目的值。    
   常用方式：`tmp = trim(stdout).split(' ')`, 然后`tmp`是个数组对象。
+
+## Monitor
+实现业务访问统计、云端模块进程基本信息等数据的提取存储。业务访问统计包括请求和回应累计，进程基本信息包括模块所在位置及其近期的CPU内存使用率，
+这些数据均存储到redis。
+  
+### monitor.client
+监控子模块依赖于`node_ranaly`库实现带时间戳数据的保存，`client`属性为该库的实例化。   
+
+### monitor.redisClient
+`redisClient`属性为redis服务的连接对象。    
+
+### monmitor.createProcessStats(moduleName, redisPara)
+为模块`moduleName`创建监控收集进程基本信息的客服端，会采用`redisPara`创建用于存储数据的redis连接。   
+  `moduleName`为云端模块名，为`webserver`或已评审的业务微服务名。    
+  `redisPara`为redis连接参数，可选。若不设置，则默认使用微软云的redis服务。   
+  
+### monitor.accessStats(request, response, next)
+通过`express`路由中间件形式实现业务访问统计并存储到已连接到的redis数据库中。函数原型为`express`实例`app.use`方法的入参形式。   
+  `request`为HTTP请求对象。    
+  `response`为HTTP回应对象。   
+  `next`即`express`框架里的next()方法。  
 
 ## MQServer
 连上MQServer服务器上，按以下步骤操作。    
