@@ -1,6 +1,6 @@
 {
   "name": "wlanpub",
-  "version": "0.1.8",
+  "version": "0.1.11",
   "description": "H3C WLAN Cloud-plat public module",
   "main": "wlanpub.js",
   "scripts": {
@@ -14,14 +14,16 @@
     "url": "git://github.com/JunejaTung/wlanpub.git"
   },
   "homepage": "https://github.com/JunejaTung/wlanpub",
-  "_id": "wlanpub@0.1.8",
+  "_id": "wlanpub@0.1.11",
   "dependencies": {
     "amqp": "~0.2.4",
     "uuid": "~2.0.1",
     "redis": "~0.12.1",
     "mongoose": "~4.1.0",
     "xml2js": "~0.4.8",
-    "node_ranaly": "~0.1.1"
+    "node_ranaly": "~0.1.1",
+    "config": "~1.16.0",
+    "log4js": "~0.6.27"
   },
   "author": "Juneja",
   "license": "ISC"

@@ -1,0 +1,42 @@
+
+监控数据存储位置
+Redis 1号数据库：select 1
+数据库总入口Key：'WLANMONIT'
+数据库其它Key前缀：'MONIT'
+
+Redis下 ---------
+总名 ： 有序集合 zadd   
+    key   - 'WLANMONIT'
+	value - 模块名 ('模块名')
+
+上线模块： 集合 sadd  定时9.5分存 老化10分
+    key   - 'MONIT:模块名'
+    value - 模块实例名 ('主机名:模块名:PID')
+	
+模块实例名： 集合 sadd  定时9.5分存 老化10分
+    key   - 'MONIT:实例名' === 'MONIT:主机名:模块名:PID'
+	value - 实例位置基本信息 { 'name'   : '', 'ipv4'   : '', 'pid'    : 0, 'starttime': '' }
+
+
+Ranaly Redis下 ---------
+业务访问统计： AMOUNT(String)	
+需由 总名key 'WLANMONIT' 获取 模块名
+    key   - 'MONITAMOUNT:业务名:REQ'  桶名:'业务名:REQ'
+	value - http请求数累计
+
+	key   - 'MONITAMOUNT:业务名:RES'  桶名:'业务名:RES'
+    value - http回应成功数累计
+	
+CPUMEM使用率统计： DATALIST(列表)  定时1分获取 老化10分
+需先由 总名key 'WLANMONIT' 获取 模块名，再组装key 'MONIT:模块名'获取 模块实例名 
+    key   - 'MONITDATALIST:模块实例名:USAGE'  桶名:'模块实例名:USAGE'
+	value - { 'cpuUsage' : '',  'memUsage' : '' }
+
+
+容器弹性扩容脚本示例：
+curnum=`ssh root@$hostname "kubectl get pods --all-namespaces | grep $microname | wc -l"`
+newnum=`expr $curnum + $flexnum`
+rcinfo=$(ssh root@$hostname "kubectl get rc --all-namespaces  | grep $microname")
+rcname=$(echo "$rcinfo" | awk 'NR==1{print $2}')
+echo " Service $microname with reosurce $rcname has $curnum replicas, will scale to $newnum replicas. "
+ssh root@$hostname "kubectl scale --replicas=$newnum replicationcontrollers $rcname"
