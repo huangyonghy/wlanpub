@@ -9,11 +9,11 @@ Redis下 ---------
     key   - 'WLANMONIT'
 	value - 模块名 ('模块名')
 
-上线模块： 集合 sadd  定时9.5分存 老化10分
+上线模块： 集合 sadd  定时10分存 老化7天
     key   - 'MONIT:模块名'
     value - 模块实例名 ('主机名:模块名:PID')
 	
-模块实例名： 集合 sadd  定时9.5分存 老化10分
+模块实例名： 集合 sadd  定时10分存 老化7天
     key   - 'MONIT:实例名' === 'MONIT:主机名:模块名:PID'
 	value - 实例位置基本信息 { 'name'   : '', 'ipv4'   : '', 'pid'    : 0, 'starttime': '' }
 
@@ -27,7 +27,7 @@ Ranaly Redis下 ---------
 	key   - 'MONITAMOUNT:业务名:RES'  桶名:'业务名:RES'
     value - http回应成功数累计
 	
-CPUMEM使用率统计： DATALIST(列表)  定时1分获取 老化10分
+CPUMEM使用率统计： DATALIST(列表)  定时1分获取 老化7天
 需先由 总名key 'WLANMONIT' 获取 模块名，再组装key 'MONIT:模块名'获取 模块实例名 
     key   - 'MONITDATALIST:模块实例名:USAGE'  桶名:'模块实例名:USAGE'
 	value - { 'cpuUsage' : '',  'memUsage' : '' }
@@ -40,3 +40,60 @@ rcinfo=$(ssh root@$hostname "kubectl get rc --all-namespaces  | grep $microname"
 rcname=$(echo "$rcinfo" | awk 'NR==1{print $2}')
 echo " Service $microname with reosurce $rcname has $curnum replicas, will scale to $newnum replicas. "
 ssh root@$hostname "kubectl scale --replicas=$newnum replicationcontrollers $rcname"
+
+
+HTTP/WebSocket请求响应性能分析 相关key分布
+Ranaly redis下 ---------
+websocket请求响应分段打点记录 --- 最近 100 条记录
+入口key   - 'MONITDATALIST:业务名:SOCKET:LIST'   桶名: '业务名:SOCKET:LIST'
+    value - 唯一请求标识   （请求标识要求冒号分割各元素，第一元素需为业务名）
+
+    key   - 'MONIT:请求标识'   --- 老化1小时
+    value - {
+                'reqTime'  :,
+                'sendTime' :,
+                'takeTime' :,
+                'replyTime':,
+                'recvTime' :,
+                'resTime'  :
+            };
+
+http请求响应分段打点记录 --- 最近 100 条记录
+入口key   - 'MONITDATALIST:业务名:HTTP:LIST'   桶名: '业务名:HTTP:LIST'
+    value - 唯一请求标识
+
+    key   - 'MONIT:请求标识'   --- 老化1小时
+    value - {
+                'reqTime'  :,
+                'sendTime' :,
+                'takeTime' :,
+                'replyTime':,
+                'recvTime' :,
+                'resTime'  :
+            };
+
+websocket请求响应分段时长计数 : AMOUNT(String)
+    key   - 'MONITAMOUNT:业务名:SOCKET:时长标识'   桶名: 'SOCKET:业务名:时长标识'
+            时长标识:  ':TAKREP:<100MS'
+                      ':TAKREP:<500MS'
+                      ':TAKREP:>500MS'
+                      ':SNDRCV:<100MS'
+                      ':SNDRCV:<500MS'
+                      ':SNDRCV:>500MS'
+                      ':REQRES:<100MS'
+                      ':REQRES:<500MS'
+                      ':REQRES:>500MS'
+    value - 各分段时长的websocket请求计数
+
+http请求响应分段时长计数 : AMOUNT(String)
+    key   - 'MONITAMOUNT:业务名:HTTP:时长标识'   桶名: 'HTTP:业务名:时长标识'
+            时长标识:  ':TAKREP:<100MS'
+                      ':TAKREP:<500MS'
+                      ':TAKREP:>500MS'
+                      ':SNDRCV:<100MS'
+                      ':SNDRCV:<500MS'
+                      ':SNDRCV:>500MS'
+                      ':REQRES:<100MS'
+                      ':REQRES:<500MS'
+                      ':REQRES:>500MS'
+    value - 各分段时长的http请求计数

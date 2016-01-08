@@ -15,6 +15,16 @@ var config  = require('config'),
     casauth = require('./lib/cas-authentication'),
     connectionModel = require('./models/connectionModel');
 
+var memoryConfig;
+var heapdump;
+var memwatch;
+if(process.platform == 'linux')
+{
+    memoryConfig = require('./lib/memory').memoryConfig;
+    heapdump = require('./lib/memory').heapdump;
+    memwatch = require('./lib/memory').memwatch;
+}
+
 module.exports = {
     "config"  : config,
     "log4js"  : log4js,
@@ -24,5 +34,8 @@ module.exports = {
     "dbhd"    : dboper,
     "monitor" : monitor,
     "casauth" : casauth,
-    "connectionModel" : connectionModel
+    "connectionModel" : connectionModel,
+    "memoryConfig" : memoryConfig,
+    "heapdump" : heapdump,
+    "memwatch" : memwatch
 };

@@ -1,6 +1,6 @@
 {
   "name": "wlanpub",
-  "version": "0.1.11",
+  "version": "0.1.12",
   "description": "H3C WLAN Cloud-plat public module",
   "main": "wlanpub.js",
   "scripts": {
@@ -18,7 +18,7 @@
   "dependencies": {
     "amqp": "~0.2.4",
     "uuid": "~2.0.1",
-    "redis": "~0.12.1",
+    "ioredis": "~1.11.0",
     "mongoose": "~4.1.0",
     "xml2js": "~0.4.8",
     "node_ranaly": "~0.1.1",
