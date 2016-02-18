@@ -1,6 +1,6 @@
 {
   "name": "wlanpub",
-  "version": "0.1.12",
+  "version": "0.1.13",
   "description": "H3C WLAN Cloud-plat public module",
   "main": "wlanpub.js",
   "scripts": {
@@ -23,7 +23,8 @@
     "xml2js": "~0.4.8",
     "node_ranaly": "~0.1.1",
     "config": "~1.16.0",
-    "log4js": "~0.6.27"
+    "log4js": "~0.6.27",
+    "async": "~1.5.0"
   },
   "author": "Juneja",
   "license": "ISC"

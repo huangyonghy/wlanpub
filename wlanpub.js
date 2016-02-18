@@ -12,7 +12,6 @@ var config  = require('config'),
     mqoper  = require('./lib/mqoper'),
     dboper  = require('./lib/dboper'),
     monitor = require('./lib/monitor'),
-    casauth = require('./lib/cas-authentication'),
     connectionModel = require('./models/connectionModel');
 
 var memoryConfig;
@@ -33,7 +32,6 @@ module.exports = {
     "mqhd"    : mqoper,
     "dbhd"    : dboper,
     "monitor" : monitor,
-    "casauth" : casauth,
     "connectionModel" : connectionModel,
     "memoryConfig" : memoryConfig,
     "heapdump" : heapdump,

@@ -80,6 +80,9 @@ function setWebserverAddress2Redis(devSNandSessionid, devModName, cloudModName, 
                 if (cloudModName == serviceName.base) {
                     if (jsonData.mainconnection == undefined) {
                         jsonData.mainconnection = {};
+                    }else if (jsonData.mainconnection.serverAddress == address) {
+                        console.warn('mainconnection is the same, return!');
+                        return;
                     }
                     jsonData.mainconnection.correlation   = correlation;
                     jsonData.mainconnection.serverAddress = address;
@@ -96,8 +99,13 @@ function setWebserverAddress2Redis(devSNandSessionid, devModName, cloudModName, 
                     for (i = 0; i < jsonData.subconnectionArray.length; i++) {
                         var subconnection = jsonData.subconnectionArray[i];
                         if (subconnection.correlation == correlation) {
-                            console.log('update subconnection to redis');
-                            jsonData.subconnectionArray[i].serverAddress = address;
+                            if (subconnection.serverAddress != address) {
+                                console.log('update subconnection to redis');
+                                jsonData.subconnectionArray[i].serverAddress = address;
+                            }else {
+                                console.log('subconnection in redis is the same. return!');
+                                return;
+                            }
                             bFound = true;
                             break;
                         }
@@ -166,6 +174,7 @@ ConnectionModel.prototype.setWebserverAddress = function (devSN, sessionid, devM
             console.log('upsert sessionid to mongoose success. key = ' + devSN);
         }else {
             console.error('upsert sessionid to mongoose with error: %s. key = %s', error, devSN);
+            console.error(error);
         }
     });
 
