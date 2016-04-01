@@ -12,6 +12,10 @@ var config  = require('config'),
     mqoper  = require('./lib/mqoper'),
     dboper  = require('./lib/dboper'),
     monitor = require('./lib/monitor'),
+    async   = require('async'),
+    isJSON  = require('is-json'),
+    digest  = require('./lib/digest'),
+    user    = require('./lib/user'),
     connectionModel = require('./models/connectionModel');
 
 var memoryConfig;
@@ -35,5 +39,9 @@ module.exports = {
     "connectionModel" : connectionModel,
     "memoryConfig" : memoryConfig,
     "heapdump" : heapdump,
-    "memwatch" : memwatch
+    "memwatch" : memwatch,
+    "async"    : async,
+    "isJSON"   : isJSON,
+    "digest"   : digest,
+    "user"     : user
 };
