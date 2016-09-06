@@ -274,6 +274,12 @@ monitor实现对业务访问统计、进程基本信息等数据的提取和存�
 ## MQServer
 连上MQServer服务器上，按以下步骤操作。    
 1.检查将要使用的用户名是否存在
+## MQServer
+连上MQServer服务器上，按以下步骤操作。    
+1.检查将要使用的用户名是否存在
+## MQServer
+连上MQServer服务器上，按以下步骤操作。    
+1.检查将要使用的用户名是否存在
 
     sudo rabbitmqctl list_users
 2.若不存在，请新增以业务名命名的账号信息
