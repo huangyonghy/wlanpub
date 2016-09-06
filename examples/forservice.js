@@ -47,11 +47,7 @@ function procRequestMsg(message, header, deliveryInfo) {
     }
 };
 
-/*
- * last --- Create your MQ connection and subscribe request msg
- * 连接参数、订阅队列及绑定均已封装在接口里
- * 以portal业务为例
- * */
+
 mqhd.connectReadyForService(basic.serviceName.portal, procRequestMsg);
 
 /* The end. */
