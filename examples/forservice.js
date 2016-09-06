@@ -13,6 +13,9 @@ var mqhd   = require('../wlanpub').mqhd,
 //var MQHostnames = ["21Server", "22Server", "VirtualServer4"];
 var MQHostnames = ["22Server"];
 
+/* 测试一下本地冲突怎么解决
+ * 若不设置这个，测默认使用微软云上的环境
+ * */
 /* First --- set hostnames for MQ server cluster
  * 若不设置这个，测默认使用微软云上的环境
  * */
