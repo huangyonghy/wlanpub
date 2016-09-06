@@ -265,21 +265,3 @@ monitor实现对业务访问统计、进程基本信息等数据的提取和存�
   `moduleName`为云端模块名，为`webserver`或已评审的业务微服务名。    
   `redisPara`为redis连接参数，可选。若不设置，则默认使用微软云的redis服务。   
   
-### monitor.accessStats(request, response, next)
-通过`express`路由中间件形式实现业务访问统计并存储到已连接到的redis数据库中。函数原型为`express`实例`app.use`方法的入参形式。   
-  `request`为HTTP请求对象。    
-  `response`为HTTP回应对象。   
-  `next`即`express`框架里的next()方法。  
-
-## MQServer
-连上MQServer服务器上，按以下步骤操作。    
-1.检查将要使用的用户名是否存在
-
-    sudo rabbitmqctl list_users
-2.若不存在，请新增以业务名命名的账号信息
-
-    sudo rabbitmqctl add_user serviceName 123456
-    sudo rabbitmqctl set_user_tags serviceName administrator
-    sudo rabbitmqctl set_permissions -p / serviceName ".*" ".*" ".*"
-也可以在MQ管理页面的首页--->Admin中操作，管理页面访问方法：MQServerIPaddr:15672。        
-建议采用上面的命令行方式操作。
