@@ -288,4 +288,3 @@ monitor实现对业务访问统计、进程基本信息等数据的提取和存�
     sudo rabbitmqctl set_user_tags serviceName administrator
     sudo rabbitmqctl set_permissions -p / serviceName ".*" ".*" ".*"
 也可以在MQ管理页面的首页--->Admin中操作，管理页面访问方法：MQServerIPaddr:15672。        
-建议采用上面的命令行方式操作。
